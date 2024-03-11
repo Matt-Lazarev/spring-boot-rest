@@ -1,5 +1,6 @@
 package com.lazarev.rest.controller;
 
+import com.lazarev.rest.dto.EmployeeDto;
 import com.lazarev.rest.entity.Employee;
 import com.lazarev.rest.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    public Employee getEmployeeById(@PathVariable Integer id){
+    public EmployeeDto getEmployeeById(@PathVariable Integer id){
         return employeeService.getEmployeeById(id);
     }
 

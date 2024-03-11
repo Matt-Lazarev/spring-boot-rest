@@ -1,5 +1,7 @@
 package com.lazarev.rest.service;
 
+import com.lazarev.rest.dto.EmployeeAdditionRequest;
+import com.lazarev.rest.dto.EmployeeDto;
 import com.lazarev.rest.entity.Employee;
 import com.lazarev.rest.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,9 +23,14 @@ public class EmployeeService {
     }
 
     @Transactional(readOnly = true)
-    public Employee getEmployeeById(Integer id){
-        return employeeRepository.findEmployeeById(id)
+    public EmployeeDto getEmployeeById(Integer id){
+        Employee employee = employeeRepository.findEmployeeById(id)
                 .orElseThrow(() -> new NoSuchElementException("Employee with id=%d not found".formatted(id)));
+        return new EmployeeDto(
+                employee.getName(),
+                employee.getEmail(),
+                employee.getDepartment().getName()
+        );
     }
 
     @Transactional
@@ -48,5 +56,15 @@ public class EmployeeService {
             throw new NoSuchElementException("Employee with id=%d not found".formatted(id));
         }
         employeeRepository.deleteById(id);
+    }
+
+    public Optional<Employee> getByIdOrDefault(EmployeeAdditionRequest employeeAdditionRequest){
+        if(employeeAdditionRequest.getEmployeeId() == null){
+            Employee employee = new Employee();
+            employee.setName(employeeAdditionRequest.getName());
+            employee.setEmail(employeeAdditionRequest.getEmail());
+            return Optional.of(employee);
+        }
+        return employeeRepository.findEmployeeById(employeeAdditionRequest.getEmployeeId());
     }
 }
