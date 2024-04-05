@@ -1,7 +1,6 @@
 package com.lazarev.rest.controller;
 
 import com.lazarev.rest.dto.EmployeeDto;
-import com.lazarev.rest.entity.Employee;
 import com.lazarev.rest.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +14,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @GetMapping
-    public List<Employee> getAllEmployee(){
+    public List<EmployeeDto> getAllEmployee(){
         return employeeService.getAllEmployees();
     }
 
@@ -26,14 +25,14 @@ public class EmployeeController {
 
     // /api/departments/{id}/add-employee
     @PostMapping
-    public void saveEmployee(@RequestBody Employee employee){
-        employeeService.saveEmployee(employee);
+    public void saveEmployee(@RequestBody EmployeeDto employeeDto){
+        employeeService.saveEmployee(employeeDto);
     }
 
     @PutMapping("/{id}")
     public void updateEmployee(@PathVariable Integer id,
-                               @RequestBody Employee employee){
-        employeeService.updateEmployee(id, employee);
+                               @RequestBody EmployeeDto employeeDto){
+        employeeService.updateEmployee(id, employeeDto);
     }
 
     @DeleteMapping("/{id}")
