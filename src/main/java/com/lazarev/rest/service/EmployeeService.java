@@ -1,10 +1,7 @@
 package com.lazarev.rest.service;
 
-import com.lazarev.rest.dto.EmployeeAdditionRequest;
-import com.lazarev.rest.dto.EmployeeDto;
 import com.lazarev.rest.entity.Employee;
 import com.lazarev.rest.repository.EmployeeRepository;
-import com.lazarev.rest.service.mapper.MapstructEmployeeMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,35 +12,31 @@ import java.util.*;
 @RequiredArgsConstructor
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
-    //private final EmployeeMapper employeeMapper;
-    private final MapstructEmployeeMapper employeeMapper;
 
     @Transactional(readOnly = true)
-    public List<EmployeeDto> getAllEmployees(){
-        List<Employee> employees = employeeRepository.findAllEmployees();
-        return employeeMapper.toDtoList(employees);
+    public List<Employee> getAllEmployees(){
+        return employeeRepository.findAllEmployees();
     }
 
     @Transactional(readOnly = true)
-    public EmployeeDto getEmployeeById(Integer id){
-        Employee employee = employeeRepository.findEmployeeById(id)
-                .orElseThrow(() -> new NoSuchElementException("Employee with id=%d not found".formatted(id)));
-
-        return employeeMapper.toDto(employee);
+    public Employee getEmployeeById(Integer id){
+        return employeeRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Employee with id='%d' not found".formatted(id)));
     }
 
     @Transactional
-    public void saveEmployee(EmployeeDto employeeDto) {
-        Employee employee = employeeMapper.toEntity(employeeDto);
+    public void saveEmployee(Employee employee) {
         employeeRepository.save(employee);
     }
 
     @Transactional
-    public void updateEmployee(Integer id, EmployeeDto employeeDto){
+    public void updateEmployee(Integer id, Employee employee){
         Employee updatableEmployee = employeeRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Employee with id=%d not found".formatted(id)));
 
-        employeeMapper.update(updatableEmployee, employeeDto);
+        updatableEmployee.setName(employee.getName());
+        updatableEmployee.setPhone(employee.getPhone());
+        updatableEmployee.setEmail(employee.getEmail());
 
         employeeRepository.save(updatableEmployee);
     }
@@ -54,15 +47,5 @@ public class EmployeeService {
             throw new NoSuchElementException("Employee with id=%d not found".formatted(id));
         }
         employeeRepository.deleteById(id);
-    }
-
-    public Optional<Employee> getByIdOrDefault(EmployeeAdditionRequest employeeAdditionRequest){
-        if(employeeAdditionRequest.getEmployeeId() == null){
-            Employee employee = new Employee();
-            employee.setName(employeeAdditionRequest.getName());
-            employee.setEmail(employeeAdditionRequest.getEmail());
-            return Optional.of(employee);
-        }
-        return employeeRepository.findEmployeeById(employeeAdditionRequest.getEmployeeId());
     }
 }
