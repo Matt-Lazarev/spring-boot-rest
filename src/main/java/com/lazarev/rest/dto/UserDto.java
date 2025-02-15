@@ -13,3 +13,6 @@ public class UserDto {
     private String username;
     private String email;
 }
+
+// new UserDto(username, email) ->
+// new User(userDto.getUsername(), userDto.getEmail()) ->
